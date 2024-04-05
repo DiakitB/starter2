@@ -6,7 +6,7 @@ const tours = JSON.parse(
   fs.readFileSync('./dev-data/data/tours-simple.json', 'utf-8')
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -14,8 +14,49 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
-});
-app.post('/api/v1/tours', (req, res) => {
+};
+
+const getAtourById = (req, res) => {
+  console.log(req.params);
+  const id = req.params.id * 1;
+  const tour = tours.find((tour) => tour.id == id);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      data: {
+        message: 'Ops ! it seems like you have inter the wrong ID ',
+      },
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+
+    data: {
+      tour: tour,
+    },
+  });
+};
+
+const updateTour = (req, res) => {
+  const id = req.params.id * 1;
+  const tour = tours.find((tour) => tour.id == id);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      data: {
+        message: 'Ops ! it seems like you have inter the wrong ID ',
+      },
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: `tour #${tour.id} was updated`,
+    },
+  });
+};
+const createNewTour = (req, res) => {
   console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -32,7 +73,36 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
+const deleteATour = (req, res) => {
+  const id = req.params.id * 1;
+  const tour = tours.find((tour) => tour.id == id);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      data: {
+        message: 'Ops ! it seems like you have inter the wrong ID ',
+      },
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: null,
+  });
+};
+// app.get('/api/v1/tours', getAllTours);
+
+// app.get('/api/v1/tours/:id', getAtourById);
+
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.post('/api/v1/tours', createNewTour);
+// app.delete('/api/v1/tours/:id', deleteATour);
+app.route('/api/v1/tours').get(getAllTours).post(createNewTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getAtourById)
+  .patch(updateTour)
+  .delete(deleteATour);
 const PORT = 3000;
 
 app.listen(PORT, () => {
