@@ -108,6 +108,47 @@ const deleteATour = (req, res) => {
     data: null,
   });
 };
+
+const getAllUser = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'success',
+    },
+  });
+};
+const createNewUser = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'success',
+    },
+  });
+};
+const updateUser = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'success',
+    },
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'success',
+    },
+  });
+};
+const getAUser = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'success',
+    },
+  });
+};
 // app.get('/api/v1/tours', getAllTours);
 
 // app.get('/api/v1/tours/:id', getAtourById);
@@ -123,6 +164,16 @@ app
   .get(getAtourById)
   .patch(updateTour)
   .delete(deleteATour);
+
+/////
+///////// Users Route
+app.route('/api/v1/users').get(getAllUser).post(createNewUser);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getAUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 /// SERVER
 const PORT = 3000;
