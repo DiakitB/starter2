@@ -3,6 +3,31 @@ const fs = require('fs');
 const tours = JSON.parse(
   fs.readFileSync('./dev-data/data/tours-simple.json', 'utf-8')
 );
+exports.checkBody = (req, res, next) => {
+  if (!req.body.name) {
+    return res.status(404).json({
+      status: 'fail',
+      data: {
+        message: 'A tour needs a name',
+      },
+    });
+  }
+
+  next();
+};
+exports.checkId = (req, res, next, val) => {
+  const id = req.params.id * 1;
+
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      data: {
+        message: `Ops! it seems like ${id} is not a valid ID`,
+      },
+    });
+  }
+  next();
+};
 
 exports.getAllTours = (req, res) => {
   res.status(200).json({
@@ -16,18 +41,8 @@ exports.getAllTours = (req, res) => {
 };
 /// ROUTE HANDLERS
 exports.getAtourById = (req, res) => {
-  console.log(req.params);
   const id = req.params.id * 1;
   const tour = tours.find((tour) => tour.id == id);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      data: {
-        message: 'Ops ! it seems like you have inter the wrong ID ',
-      },
-    });
-  }
-
   res.status(200).json({
     status: 'success',
 
@@ -38,16 +53,8 @@ exports.getAtourById = (req, res) => {
 };
 
 exports.updateTour = (req, res) => {
-  exports.id = req.params.id * 1;
-  exports.tour = tours.find((tour) => tour.id == id);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      data: {
-        message: 'Ops ! it seems like you have inter the wrong ID ',
-      },
-    });
-  }
+  const id = req.params.id * 1;
+  const tour = tours.find((tour) => tour.id == id);
   res.status(200).json({
     status: 'success',
     data: {
@@ -76,14 +83,7 @@ exports.createNewTour = (req, res) => {
 exports.deleteATour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((tour) => tour.id == id);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      data: {
-        message: 'Ops ! it seems like you have inter the wrong ID ',
-      },
-    });
-  }
+
   res.status(200).json({
     status: 'success',
     data: null,
