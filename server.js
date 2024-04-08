@@ -16,7 +16,6 @@ mongoose
 
 //// CREATING AN INSTANCE OF OUR MODEL
 
-
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
