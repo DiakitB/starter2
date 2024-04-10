@@ -43,26 +43,43 @@ exports.getAllTours = async (req, res) => {
   } catch (err) {}
 };
 /// ROUTE HANDLERS
-exports.getAtourById = (req, res) => {
+exports.getAtourById = async (req, res) => {
   // const id = req.params.id * 1;
   // const tour = tours.find((tour) => tour.id == id);
-  res.status(200).json({
-    // status: 'success',
-    // data: {
-    //   tour: tour,
-    // },
-  });
+  try {
+    const tour = await Tour.findById(req.params.id);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: `Ops ! it seems like the id you enter is the wrong  Id`,
+    });
+  }
 };
 
-exports.updateTour = (req, res) => {
-  // const id = req.params.id * 1;
-  // const tour = tours.find((tour) => tour.id == id);
-  res.status(200).json({
-    status: 'success',
-    // data: {
-    //   message: `tour #${tour.id} was updated`,
-    // },
-  });
+exports.updateTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 exports.createNewTour = async (req, res) => {
   try {
@@ -80,12 +97,17 @@ exports.createNewTour = async (req, res) => {
     });
   }
 };
-exports.deleteATour = (req, res) => {
-  const id = req.params.id * 1;
-  const tour = tours.find((tour) => tour.id == id);
-
-  res.status(200).json({
-    status: 'success',
-    data: null,
-  });
+exports.deleteATour = async (req, res) => {
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
