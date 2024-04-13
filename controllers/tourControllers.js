@@ -1,37 +1,25 @@
 const Tour = require('../model/tourModel');
 
-// const tours = JSON.parse(
-//   fs.readFileSync('./dev-data/data/tours-simple.json', 'utf-8')
-// );
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       data: {
-//         message: 'A tour needs a name',
-//       },
-//     });
-//   }
+class APIFeature {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
+  filter() {
+    const queryObject = { ...this.queryString };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObject[el]);
+    ///ADVANCE FILTERING
+    let querySt = JSON.stringify(queryObject);
+    querySt = querySt.replace(/\b(gte?|lte?)\b/g, (match) => `$${match}`);
 
-//   next();
-// };
-// exports.checkId = (req, res, next, val) => {
-//   const id = req.params.id * 1;
-
-//   if (id > tours.length) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       data: {
-//         message: `Ops! it seems like ${id} is not a valid ID`,
-//       },
-//     });
-//   }
-//   next();
-// };
+    this.query.find(JSON.parse(querySt));
+  }
+}
 
 exports.getAllTours = async (req, res) => {
   try {
-    /// FILTERING
+    //FILTERING
     const queryObject = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObject[el]);
@@ -57,8 +45,21 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.select('-__v');
     }
-    const tours = await query;
 
+    // pagination
+
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    if (req.query.page) {
+      const numDoc = await Tour.countDocuments();
+      query = query.skip(skip).limit(limit);
+      if (req.query.page >= numDoc) throw new Error("this page doesn't exist");
+    }
+    // const features = new APIFeature(Tour.find(), req.query).filter();
+    //// EXECUTE QUERY
+    const tours = await query;
+    //// SEND RESPONSE OBJECT
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -67,7 +68,12 @@ exports.getAllTours = async (req, res) => {
         tours: tours,
       },
     });
-  } catch (err) {}
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 /// ROUTE HANDLERS
 exports.getAtourById = async (req, res) => {
