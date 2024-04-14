@@ -4,10 +4,10 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 if (process.env.NODE_ENV === 'developement') {
-  console.log(process.env);
+  // console.log(process.env);
   app.use(morgan('dev'));
 }
-console.log(process.env);
+// console.log(process.env);
 //MIDDLEWARE
 
 app.use(express.json());
