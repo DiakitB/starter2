@@ -3,9 +3,10 @@ const userController = require('../controllers/userController');
 const authenController = require('../controllers/authenController');
 const router = express.Router();
 router.post('/signup', authenController.signup);
+router.post('/login', authenController.loging);
 router
   .route('/')
-  .get(userController.getAllUser)
+  .get(userController.getAllUsers)
   .post(userController.createNewUser);
 
 router
