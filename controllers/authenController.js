@@ -3,7 +3,11 @@ const errorApi = require('../utils/errorApi');
 const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync');
 console.log(jwt);
-
+const singinToken = (id) => {
+  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_TIME_OUT,
+  });
+};
 exports.signup = async (req, res) => {
   try {
     const newUser = await User.create({
@@ -13,10 +17,10 @@ exports.signup = async (req, res) => {
       confirmPassword: req.body.confirmPassword,
     });
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_TIME_OUT,
-    });
-
+    // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+    //   expiresIn: process.env.JWT_TIME_OUT,
+    // });
+    const token = singinToken(newUser._id);
     res.status(201).json({
       status: 'success',
       token,
@@ -42,10 +46,17 @@ exports.loging = catchAsync(async (req, res, next) => {
   }
   /// 2 check if user exist and password is correct
   const user = await User.findOne({ email }).select('+password');
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new errorApi('incorrect password or email', 401));
+  }
   console.log(user);
-  const token = '';
+  const token = singinToken(user._id);
   res.status(200).json({
     status: 'success',
     token,
   });
 });
+
+// "email": "naela123@gmail.com",
+// "password": "test12345",

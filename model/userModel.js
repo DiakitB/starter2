@@ -48,6 +48,10 @@ userSchema.pre('save', async function (next) {
   this.confirmPassword = undefined;
   next();
 });
+
+userSchema.methods.correctPassword = async function (candidatPassword, userPassword) {
+  return bcript.compare(candidatPassword, userPassword)
+}
 const User = mongoose.model('User', userSchema);
 
 /// CREATING OUR MODEL OUT OF OUR SCHEMA
