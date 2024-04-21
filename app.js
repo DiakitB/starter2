@@ -12,7 +12,6 @@ if (process.env.NODE_ENV === 'developement') {
 
 app.use(express.json());
 app.use((req, res, next) => {
-  console.log(req.headers);
   next();
 });
 // READING FILE
