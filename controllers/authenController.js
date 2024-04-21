@@ -58,5 +58,11 @@ exports.loging = catchAsync(async (req, res, next) => {
   });
 });
 
-// "email": "naela123@gmail.com",
-// "password": "test12345",
+exports.correct = catchAsync(async (req, res, next) => {
+  /// 1 )GETTING TOKEN AND CHECK IF IT'S THERE
+
+  /// 2) VERIFICATION TOKEN
+  ///3) CHECK IF USER EXIST
+  /// 4) CHECK IF USER CHANGE PASSWORD AFTER TOKEN HAS BEEN ISSUE
+  next();
+});

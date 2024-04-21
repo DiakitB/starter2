@@ -11,7 +11,10 @@ if (process.env.NODE_ENV === 'developement') {
 //MIDDLEWARE
 
 app.use(express.json());
-
+app.use((req, res, next) => {
+  console.log(req.headers);
+  next();
+});
 // READING FILE
 
 app.use('/api/v1/users', userRouter);
@@ -35,5 +38,6 @@ app.use((err, req, res, next) => {
     message: err.message,
   });
 });
+
 /// SERVER
 module.exports = app;
