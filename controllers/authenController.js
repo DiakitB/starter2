@@ -3,7 +3,9 @@ const { promisify } = require('util');
 const errorApi = require('../utils/errorApi');
 const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync');
-console.log(jwt);
+
+//// creating a function for sign in token
+
 const singinToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_TIME_OUT,
@@ -36,7 +38,7 @@ exports.signup = async (req, res) => {
     });
   }
 };
-exports.loging = catchAsync(async (req, res, next) => {
+exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   /// 1check if email and password exist

@@ -76,3 +76,13 @@ exports.correct = catchAsync(async (req, res, next) => {
   /// 4) CHECK IF USER CHANGE PASSWORD AFTER TOKEN HAS BEEN ISSUE
   next();
 });
+
+/// routes
+router.post('/signup', authenController.signup);
+router.post('/login', authenController.loging);
+userSchema.methods.correctPassword = async function (
+  candidatPassword,
+  userPassword
+) {
+  return bcript.compare(candidatPassword, userPassword);
+};

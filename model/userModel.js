@@ -49,9 +49,15 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.methods.correctPassword = async function (candidatPassword, userPassword) {
-  return bcript.compare(candidatPassword, userPassword)
-}
+//// implementing compare password function
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return bcript.compare(candidatePassword, userPassword);
+};
+
 const User = mongoose.model('User', userSchema);
 
 /// CREATING OUR MODEL OUT OF OUR SCHEMA
