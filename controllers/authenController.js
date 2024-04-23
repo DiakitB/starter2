@@ -18,6 +18,7 @@ exports.signup = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       confirmPassword: req.body.confirmPassword,
+      role: req.body.role,
     });
 
     // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
