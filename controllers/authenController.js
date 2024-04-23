@@ -61,7 +61,7 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.correct = catchAsync(async (req, res, next) => {
+exports.protected = catchAsync(async (req, res, next) => {
   /// 1 )GETTING TOKEN AND CHECK IF IT'S THERE
   let token;
   if (
@@ -81,6 +81,10 @@ exports.correct = catchAsync(async (req, res, next) => {
   const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   console.log(decode);
   ///3) CHECK IF USER EXIST
+  const freshUser = await User.findById(decode.id);
+  if (!freshUser) {
+    return next(new errorApi("this user doesn't exist "));
+  }
   /// 4) CHECK IF USER CHANGE PASSWORD AFTER TOKEN HAS BEEN ISSUE
   next();
 });
