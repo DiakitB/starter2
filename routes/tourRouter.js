@@ -7,13 +7,17 @@ router.route('/tour-stats').get(tourControllers.getTourStats);
 router.route('/montly-plan/:year').get(tourControllers.getMontlyPlan);
 router
   .route('/')
-  .get(authenController.correct, tourControllers.getAllTours)
+  .get(authenController.protected, tourControllers.getAllTours)
   .post(tourControllers.createNewTour);
 
 router
   .route('/:id')
   .get(tourControllers.getAtourById)
   .patch(tourControllers.updateTour)
-  .delete(tourControllers.deleteATour);
+  .delete(
+    authenController.protected,
+    // authenController.restrictTo('admin'),
+    tourControllers.deleteATour
+  );
 
 module.exports = router;

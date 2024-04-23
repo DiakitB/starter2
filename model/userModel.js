@@ -6,37 +6,45 @@ const bcript = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'A user must have a name'],
-
-    trim: true,
-    maxlength: [40, 'the max length a user can have is 40 caracters'],
-    // minlength: [5, 'the min length a user can have is 10 caracters'],
+    required: [true, 'Please tell us your name!'],
   },
   email: {
     type: String,
-    required: [true, 'A user must have an email'],
+    required: [true, 'Please provide your email'],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email address'],
+    validate: [validator.isEmail, 'Please provide a valid email'],
+  },
+  photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
   },
   password: {
     type: String,
-    required: [true, 'A user must have an password'],
+    required: [true, 'Please provide a password'],
     minlength: 8,
     select: false,
   },
   confirmPassword: {
     type: String,
-    required: [true, 'A user must have an password'],
+    required: [true, 'Please confirm your password'],
     validate: {
+      // This only works on CREATE and SAVE!!!
       validator: function (el) {
         return el === this.password;
       },
-      messag: "Password don't match",
+      message: 'Passwords are not the same!',
     },
   },
-  photo: {
-    type: String,
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
   },
 });
 
