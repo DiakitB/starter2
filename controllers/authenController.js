@@ -87,5 +87,18 @@ exports.protected = catchAsync(async (req, res, next) => {
     return next(new errorApi("this user doesn't exist "));
   }
   /// 4) CHECK IF USER CHANGE PASSWORD AFTER TOKEN HAS BEEN ISSUE
+  req.user = freshUser;
   next();
+  console.log(req.user);
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new errorApi('You are not authorized to perform this operation', 403)
+      );
+    }
+    next();
+  };
+};
