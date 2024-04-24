@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 
@@ -65,7 +66,17 @@ userSchema.methods.correctPassword = async function (
 ) {
   return bcript.compare(candidatePassword, userPassword);
 };
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
 
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  console.log({ resetToken }, this.passwordResetToken);
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
 const User = mongoose.model('User', userSchema);
 
 /// CREATING OUR MODEL OUT OF OUR SCHEMA
