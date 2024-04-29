@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-
+const bcript = require('bcryptjs');
 const User = require('../model/userModel');
 const { promisify } = require('util');
 const errorApi = require('../utils/errorApi');
@@ -7,6 +7,17 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const form = require('../utils/form');
+
+const createSendToken = (user, status, res) => {
+  const token = singinToken(user._id);
+  res.status(status).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
 //// creating a function for sign in token
 
 const singinToken = (id) => {
@@ -15,6 +26,9 @@ const singinToken = (id) => {
     expiresIn: process.env.JWT_TIME_OUT,
   });
 };
+////
+
+/////
 exports.signup = async (req, res) => {
   form();
   try {
@@ -26,17 +40,15 @@ exports.signup = async (req, res) => {
       role: req.body.role,
     });
 
-    // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-    //   expiresIn: process.env.JWT_TIME_OUT,
+    createSendToken(newUser, 201, res);
+    // const token = singinToken(newUser._id);
+    // res.status(201).json({
+    //   status: 'success',
+    //   token,
+    //   data: {
+    //     user: newUser,
+    //   },
     // });
-    const token = singinToken(newUser._id);
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-        user: newUser,
-      },
-    });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
@@ -59,12 +71,13 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new errorApi('incorrect password or email', 401));
   }
-  console.log(user);
-  const token = singinToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  // console.log(user);
+  // const token = singinToken(user._id);
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
+  createSendToken(user, 200, res);
 });
 
 exports.protected = catchAsync(async (req, res, next) => {
@@ -178,4 +191,16 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
   });
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  /// Getting the user from collection
+  const user = await User.findById(req.user.id).select('+password');
+  if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+    return next(new errorApi('wrong password', 401));
+  }
+  (user.password = req.body.password),
+    (user.confirmPassword = req.body.confirmPassword);
+  await user.save();
+  createSendToken(user, 200, res);
 });
