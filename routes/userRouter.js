@@ -6,6 +6,12 @@ router.post('/signup', authenController.signup);
 router.post('/login', authenController.login);
 router.post('/forgotPassword', authenController.forgotPassword);
 router.patch('/resetPassword/:token', authenController.resetPassword);
+router.patch('/updateMe', authenController.protected, userController.updateMe);
+router.delete(
+  '/deleteMe',
+  authenController.protected,
+  userController.deletetMe
+);
 router.patch(
   '/updateMyPassword',
   authenController.protected,
