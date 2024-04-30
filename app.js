@@ -2,15 +2,24 @@ const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
 const express = require('express');
 const morgan = require('morgan');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const app = express();
-if (process.env.NODE_ENV === 'developement') {
-  // console.log(process.env);
-  app.use(morgan('dev'));
-}
+
+// console.log(process.env);
+app.use(helmet());
+app.use(morgan('dev'));
+
 // console.log(process.env);
 //MIDDLEWARE
+const limiter = rateLimit({
+  max: 1000,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this API please try in an  hour',
+});
 
-app.use(express.json());
+app.use('/api', limiter);
+app.use(express.json({ limit: '10kb' }));
 app.use((req, res, next) => {
   console.log(req.headers);
   next();
