@@ -40,7 +40,18 @@ app.use((req, res, next) => {
 });
 
 ///
-app.use(hpp());
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 // READING FILE
 
 app.use('/api/v1/users', userRouter);
