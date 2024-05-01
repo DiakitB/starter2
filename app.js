@@ -4,22 +4,36 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const app = express();
 
 // console.log(process.env);
-app.use(helmet());
-app.use(morgan('dev'));
 
 // console.log(process.env);
-//MIDDLEWARE
+// GLOBAL  MIDDLEWARE
+app.use(helmet());
+app.use(morgan('dev'));
+/// Limit the number of request to the same API
 const limiter = rateLimit({
   max: 1000,
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this API please try in an  hour',
 });
+////
 
 app.use('/api', limiter);
+
+/// Body parser reading data from the body into req.body
 app.use(express.json({ limit: '10kb' }));
+
+/// Data sanitization against NoSQL query injection
+
+app.use(mongoSanitize());
+//// Data sanitization against XSS
+app.use(xss());
+/// test Midleware
+
 app.use((req, res, next) => {
   console.log(req.headers);
   next();
