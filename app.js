@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const app = express();
 
 // console.log(process.env);
@@ -33,11 +34,13 @@ app.use(mongoSanitize());
 //// Data sanitization against XSS
 app.use(xss());
 /// test Midleware
-
 app.use((req, res, next) => {
   console.log(req.headers);
   next();
 });
+
+///
+app.use(hpp());
 // READING FILE
 
 app.use('/api/v1/users', userRouter);
