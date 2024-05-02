@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { default: slugify } = require('slugify');
 const { isPassportNumber } = require('validator');
-
+const User = require('../model/userModel');
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -89,7 +89,7 @@ const tourSchema = new mongoose.Schema(
       address: String,
       description: String,
     },
-    location: [
+    locations: [
       {
         type: {
           type: String,
@@ -100,6 +100,12 @@ const tourSchema = new mongoose.Schema(
         address: String,
         description: String,
         day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
       },
     ],
   },
@@ -119,6 +125,20 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+tourSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+// tourSchema.pre('save', async function (next) {
+//   const tourGuide = this.guides.map(async (id) => await User.findById(id));
+//   this.guide = await Promise.all(tourGuide);
+//   next();
+// });
 const Tour = mongoose.model('Tour', tourSchema);
 
 /// CREATING OUR MODEL OUT OF OUR SCHEMA
