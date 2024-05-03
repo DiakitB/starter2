@@ -37,6 +37,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 exports.createNewUser = (req, res) => {
+  console.log('new user has been created');
   res.status(200).json({
     status: 'success',
     data: {

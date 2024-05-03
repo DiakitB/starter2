@@ -1,5 +1,6 @@
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
+const reviewRouter = require('./routes/reviewRoute');
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
@@ -56,6 +57,7 @@ app.use(
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   // res.status(404).json({
