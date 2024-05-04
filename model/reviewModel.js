@@ -17,20 +17,17 @@ const reviewSchema = new mongoose.Schema(
       default: Date.now(),
       select: false,
     },
-    tour: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Tour',
-        require: [true, 'Review must belong to a tour'],
-      },
-    ],
-    user: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-        require: [true, 'Review must belong to a user'],
-      },
-    ],
+    tour: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Tour',
+      require: [true, 'Review must belong to a tour'],
+    },
+
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      require: [true, 'Review must belong to a user'],
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -38,13 +35,13 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-// reviewSchema.pre(/^find/, function (next) {
-//   // this points to the current query
-//   this.populate({
-//     path: 'guides',
-//     select: '-__v -passwordChangedAt',
-//   });
-//   next();
-// });
+reviewSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.populate({
+    path: 'user',
+    select: 'name',
+  });
+  next();
+});
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;

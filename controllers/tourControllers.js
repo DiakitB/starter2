@@ -31,7 +31,7 @@ exports.getAtourById = async (req, res) => {
   // const id = req.params.id * 1;
   // const tour = tours.find((tour) => tour.id == id);
   try {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id).populate('reviews');
     res.status(200).json({
       status: 'success',
       data: {
