@@ -28,31 +28,6 @@ const createSendToken = (user, status, res) => {
   });
 };
 
-// const createSendToken = (user, statusCode, res) => {
-//   const token = signToken(user._id);
-//   const cookieOptions = {
-//     expires: new Date(
-//       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-//     ),
-//     httpOnly: true,
-//   };
-//   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-
-//   res.cookie('jwt', token, cookieOptions);
-
-//   // Remove password from output
-//   user.password = undefined;
-
-//   res.status(statusCode).json({
-//     status: 'success',
-//     token,
-//     data: {
-//       user,
-//     },
-//   });
-// };
-//// creating a function for sign in token
-
 const singinToken = (id) => {
   form();
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -69,19 +44,11 @@ exports.signup = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      confirmPassword: req.body.confirmPassword,
+      passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
     });
 
     createSendToken(newUser, 201, res);
-    // const token = singinToken(newUser._id);
-    // res.status(201).json({
-    //   status: 'success',
-    //   token,
-    //   data: {
-    //     user: newUser,
-    //   },
-    // });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
@@ -214,7 +181,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     );
   }
   user.password = req.body.password;
-  user.confirmPassword = req.body.confirmPassword;
+  user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
@@ -233,7 +200,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     return next(new errorApi('wrong password', 401));
   }
   (user.password = req.body.password),
-    (user.confirmPassword = req.body.confirmPassword);
+    (user.passwordConfirm = req.body.passwordConfirm);
   await user.save();
   createSendToken(user, 200, res);
 });

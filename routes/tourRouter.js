@@ -4,24 +4,39 @@ const tourControllers = require('../controllers/tourControllers');
 // const reviewController = require('../controllers/reviewController');
 const reviewRouter = require('../routes/reviewRoute');
 const router = express.Router();
-
+//////
 router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/tour-stats').get(tourControllers.getTourStats);
-router.route('/montly-plan/:year').get(tourControllers.getMontlyPlan);
+
+/////
+router
+  .route('/montly-plan/:year')
+  .get(
+    authenController.protected,
+    authenController.restrictTo('admin', 'lead-guide', 'guide'),
+    tourControllers.getMontlyPlan
+  );
 
 /////////////
 
 //////
 router
   .route('/')
-  .get(authenController.protected, tourControllers.getAllTours)
-  .post(tourControllers.createNewTour);
-
+  .get(tourControllers.getAllTours)
+  .post(
+    authenController.protected,
+    authenController.restrictTo('admin', 'lead-guide'),
+    tourControllers.createNewTour
+  );
 router
   .route('/:id')
   .get(tourControllers.getAtourById)
-  .patch(tourControllers.updateTour)
+  .patch(
+    authenController.protected,
+    authenController.restrictTo('admin', 'lead-guide'),
+    tourControllers.updateTour
+  )
   .delete(
     authenController.protected,
     authenController.restrictTo('admin', 'lead-guide'),
