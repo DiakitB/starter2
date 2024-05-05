@@ -1,100 +1,7 @@
 const Tour = require('../model/tourModel');
-const APIFeature = require('../utils/apiFeature');
+const factory = require('./handlerFactory');
 
-exports.getAllTours = async (req, res) => {
-  try {
-    const features = new APIFeature(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .fieldsLimit()
-      .pagination();
-    //// EXECUTE QUERY
-    const tours = await features.query;
-    //// SEND RESPONSE OBJECT
-    res.status(200).json({
-      status: 'success',
-      results: tours.length,
-
-      data: {
-        tours: tours,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
-/// ROUTE HANDLERS
-exports.getAtourById = async (req, res) => {
-  // const id = req.params.id * 1;
-  // const tour = tours.find((tour) => tour.id == id);
-  try {
-    const tour = await Tour.findById(req.params.id).populate('reviews');
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour: tour,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: `Ops ! it seems like the id you enter is the wrong  Id`,
-    });
-  }
-};
-
-exports.updateTour = async (req, res) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour: tour,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
-exports.createNewTour = async (req, res) => {
-  try {
-    const newTour = await Tour.create(req.body);
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
-exports.deleteATour = async (req, res) => {
-  try {
-    await Tour.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+/// GET ALL TOUR
 
 exports.getTourStats = async (req, res) => {
   try {
@@ -176,3 +83,8 @@ exports.getMontlyPlan = async (req, res) => {
     });
   }
 };
+exports.getAllTours = factory.getAll(Tour);
+exports.getAtourById = factory.getOne(Tour, { path: 'reviews' });
+exports.updateTour = factory.updateOne(Tour);
+exports.createNewTour = factory.createOne(Tour);
+exports.deleteATour = factory.deleteOne(Tour);
