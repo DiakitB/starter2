@@ -20,6 +20,11 @@ router
 
 /////////////
 
+//////GEOLOCATION ROUTER
+router
+  .route('/tours-within/:distance/center/:latlng/:unit/:unit')
+  .get(tourControllers.getTourswithin);
+
 //////
 router
   .route('/')
