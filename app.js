@@ -1,3 +1,4 @@
+const path = require('path');
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
 const reviewRouter = require('./routes/reviewRoute');
@@ -9,6 +10,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const app = express();
+
+app.set('views engine', 'pug');
 
 // console.log(process.env);
 

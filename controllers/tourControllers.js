@@ -90,9 +90,9 @@ exports.getMontlyPlan = async (req, res) => {
   }
 };
 
-/// GET TOURS WITHIN
-// '/tours-within/:distance/center/;lat lng/:unit/:unit',
-// tours-withn/:distance/center/34.054346, -118.240919/unit/mi
+// GET TOURS WITHIN
+//'/tours-within/distance/center/lat lng/:unit/:unit',
+//tours-withn/:distance/center/34.054346, -118.240919/unit/mi
 
 exports.getTourswithin = catchAsync(async (req, res, next) => {
   const { distance, center, latlng, unit } = req.params;
@@ -109,6 +109,40 @@ exports.getTourswithin = catchAsync(async (req, res, next) => {
     results: tours.length,
     data: {
       data: tours,
+    },
+  });
+});
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { center, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const multiplier = unit === 'mil' ? 0.000621371 : 0.001;
+  // const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  if (!lat || !lng) {
+    next(new AppError('please provide your location', 400));
+  }
+  const distance = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+  res.status(200).json({
+    result: distance.length,
+    data: {
+      data: distance,
     },
   });
 });
